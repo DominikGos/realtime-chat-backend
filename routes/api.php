@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\UserController;
 use App\Http\Resources\ChatResource;
 use App\Http\Resources\UserResource;
 use App\Models\Chat;
@@ -30,4 +31,8 @@ Route::post('/login', [LoginController::class, 'login'])->name('login');
 
 Route::middleware('auth:sanctum')->group(function() {
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+    Route::group(['as' => 'users.', 'prefix' => '/users'], function() {
+        Route::get('', [UserController::class, 'index'])->name('index');
+    });
 });
