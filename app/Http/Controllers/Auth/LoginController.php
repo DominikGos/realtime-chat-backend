@@ -14,6 +14,7 @@ class LoginController extends Controller
     {
         if (Auth::attempt($request->validated())) {
             $user = Auth::user();
+            $user->signed_in = now();
             $token = $user->createToken('app', ['user'])->plainTextToken;
 
             return new JsonResponse([
@@ -32,6 +33,7 @@ class LoginController extends Controller
     public function logout(): JsonResponse
     {
         $user = Auth::user();
+        $user->signed_in = null;
         $user->currentAccessToken()->delete();
 
         return new JsonResponse(null, 204);
