@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Resources\ChatResource;
 use App\Http\Resources\UserResource;
 use App\Models\Chat;
@@ -22,6 +24,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/', function() {
-    return ChatResource::make(Chat::with(['users'])->first());
+Route::post('/register', [RegisterController::class, 'register'])->name('register');
+
+Route::post('/login', [LoginController::class, 'login'])->name('login');
+
+Route::middleware('auth:sanctum')->group(function() {
+    Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 });
