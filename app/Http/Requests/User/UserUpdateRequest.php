@@ -3,8 +3,9 @@
 namespace App\Http\Requests\User;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class IndexRequest extends FormRequest
+class UserUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,7 +23,12 @@ class IndexRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'start' => 'required|integer|min:0'
+            'first_name' => 'string|min:2|max:255|required',
+            'last_name' => 'string|min:2|max:255|required',
+            'email' => [
+                'email', 'min:2', 'max:255', 'required', Rule::unique('users', 'email')->ignore($this->route('id'))
+            ],
+            'avatar_path' => 'nullable|string|max:255',
         ];
     }
 }
