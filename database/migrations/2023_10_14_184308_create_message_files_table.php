@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('message_files', function (Blueprint $table) {
             $table->id();
             $table->foreignId('message_id')->constrained('messages')->onDelete('cascade')->onUpdate('cascade');
+            $table->string('path');
             $table->timestamps();
         });
     }

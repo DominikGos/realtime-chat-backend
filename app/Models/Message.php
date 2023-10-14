@@ -20,7 +20,7 @@ class Message extends Model
         return $this->hasMany(MessageFile::class);
     }
 
-    public function author(): BelongsTo
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
