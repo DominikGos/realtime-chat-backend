@@ -7,6 +7,7 @@ use App\Http\Resources\ChatResource;
 use App\Models\Chat;
 use App\Models\User;
 use App\Models\UserChat;
+use App\Services\ChatService;
 use Error;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -16,20 +17,14 @@ use Illuminate\Support\Facades\Auth;
 
 class ChatController extends Controller
 {
-    private function findChat(User $friend): ?Chat
-    {
-        $chat = Auth::user()->chats()->whereHas('users', function(Builder $query) use ($friend) {
-            $query->where('user_id', $friend->id);
-        })->first();
-
-        return $chat;
-    }
+    public function __construct(private ChatService $chatService)
+    {}
 
     public function store(ChatStoreRequest $request): JsonResponse
     {   
         $chat = new Chat();
         $friend = User::findOrFail($request->validated()['friendId']);
-        $sharedChat = $this->findChat($friend);
+        $sharedChat = $this->chatService->findChat($friend);
 
         if($sharedChat) {
             return new JsonResponse([
