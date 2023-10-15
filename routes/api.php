@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\UserController;
 use App\Http\Resources\ChatResource;
 use App\Http\Resources\UserResource;
@@ -40,5 +41,9 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::put('/{id}', [UserController::class, 'update'])->name('update');
 
         Route::delete('/{id}', [UserController::class, 'destroy'])->name('destroy');
+    });
+   
+    Route::group(['as' => 'chats.', 'prefix' => '/chats'], function() {
+        Route::post('', [ChatController::class, 'store'])->name('store');
     });
 });
