@@ -44,6 +44,8 @@ Route::middleware('auth:sanctum')->group(function() {
     });
    
     Route::group(['as' => 'chats.', 'prefix' => '/chats'], function() {
+        Route::get('', [ChatController::class, 'index'])->name('index');
+
         Route::post('', [ChatController::class, 'store'])->name('store');
     });
 });

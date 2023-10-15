@@ -18,7 +18,7 @@ class ChatResource extends JsonResource
             'id' => $this->id,
             'created_at' => TimestampResource::make($this->created_at),
             'updated_at' => TimestampResource::make($this->updated_at),
-            'last_message' => MessageResource::make($this->messages()->latest()->first()),
+            'last_message' => MessageResource::make($this->messages()->with('user')->latest()->first()),
             'users' => UserResource::collection($this->whenLoaded('users')),
         ];
     }
