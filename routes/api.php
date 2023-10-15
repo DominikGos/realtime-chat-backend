@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\MessageController;
 use App\Http\Controllers\UserController;
 use App\Http\Resources\ChatResource;
 use App\Http\Resources\UserResource;
@@ -45,7 +46,9 @@ Route::middleware('auth:sanctum')->group(function() {
    
     Route::group(['as' => 'chats.', 'prefix' => '/chats'], function() {
         Route::get('', [ChatController::class, 'index'])->name('index');
-
+        
         Route::post('', [ChatController::class, 'store'])->name('store');
+        
+        Route::get('/{id}/messages', [MessageController::class, 'index'])->name('messages.index');
     });
 });
