@@ -25,7 +25,7 @@ class MessageController extends Controller
         $this->initFileService(self::$filesDirectory); //reuired for HasFile trait
     }
 
-    public function index(MessageIndexRequest $request, int $chatId): JsonResponse
+    public function index(MessageIndexRequest $request, int $chatId): JsonResponse //add authorization
     {
         $start = $request->validated()['start'];
         $limit = 10;
@@ -56,11 +56,11 @@ class MessageController extends Controller
         $message->user()->associate(Auth::user());
         $message->chat()->associate($chat);
         $message->save();
-        $filesPaths = $request->validated()['files_paths'] ?? [];
+        $filesLinks = $request->validated()['files_links'] ?? [];
         $files = [];
 
-        foreach($filesPaths as $path) {
-            $files[] = new MessageFile(['path' => $path]);
+        foreach($filesLinks as $link) {
+            $files[] = new MessageFile(['path' => $this->fileService->getFilePath($link)]);
         }
 
         $message->files()->saveMany($files);

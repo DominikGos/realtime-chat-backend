@@ -20,21 +20,21 @@ class FileService
     {
         $path = $file->store($this->directory, $this->disk);
 
-        return $path;
+        return 'storage/' . $path;
     }
     
     public function destroy(string $fileLink): void
     {
         $filePath = $this->getFilePath($fileLink);
-
+        $filePath = str_replace('storage/', '', $filePath);
         Storage::disk($this->disk)->delete($filePath);
     }
 
     public function getFilePath(string $linkToFile): string
     {
-        $filePath = explode('storage/', $linkToFile);
-        $filePath = end($filePath);
+        $dividedPath = explode('storage/', $linkToFile);
+        $filePath = end($dividedPath);
 
-        return $filePath;
+        return 'storage/' . $filePath;
     }
 }
