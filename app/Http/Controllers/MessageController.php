@@ -56,4 +56,12 @@ class MessageController extends Controller
             'message' => MessageResource::make($message->load('files'))
         ], 201);
     }
+
+    public function destroy(int $messageId): JsonResponse
+    {
+        $message = Message::findOrFail($messageId);
+        $message->delete();
+
+        return new JsonResponse(null, 204);
+    }
 }

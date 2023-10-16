@@ -52,5 +52,7 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::get('/{id}/messages', [MessageController::class, 'index'])->name('messages.index');
 
         Route::post('/{id}/messages', [MessageController::class, 'store'])->name('messages.store');
+
+        Route::delete('/messages/{id}', [MessageController::class, 'destroy'])->name('messages.destroy');
     });
 });
