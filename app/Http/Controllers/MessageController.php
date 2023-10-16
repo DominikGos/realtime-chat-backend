@@ -9,6 +9,7 @@ use App\Http\Resources\MessageResource;
 use App\Models\Chat;
 use App\Models\Message;
 use App\Models\MessageFile;
+use App\Traits\HasFile;
 use Error;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -16,6 +17,14 @@ use Illuminate\Support\Facades\Auth;
 
 class MessageController extends Controller
 {
+    use HasFile;
+
+    static string $filesDirectory = 'message';
+
+    public function __construct() {
+        $this->initFileService(self::$filesDirectory);
+    }
+
     public function index(MessageIndexRequest $request, int $chatId): JsonResponse
     {
         $start = $request->validated()['start'];

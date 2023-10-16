@@ -54,5 +54,7 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::post('/{id}/messages', [MessageController::class, 'store'])->name('messages.store');
 
         Route::delete('/messages/{id}', [MessageController::class, 'destroy'])->name('messages.destroy');
+
+        Route::post('/messages/files', [MessageController::class, 'storeFile'])->name('messages.files.store');
     });
 });
