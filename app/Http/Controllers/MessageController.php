@@ -30,9 +30,12 @@ class MessageController extends Controller
         $start = $request->validated()['start'];
         $limit = 10;
         $chat = Chat::findOrFail($chatId);
+
+        $this->authorize('viewMessages', $chat);
+
         $messages = $chat
             ->messages()
-            ->with('files')
+            ->with(['files', 'user'])
             ->orderBy('id', 'desc')
             ->offset($start)
             ->limit($limit)

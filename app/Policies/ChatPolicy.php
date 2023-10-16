@@ -37,4 +37,11 @@ class ChatPolicy
             ? true
             : false;
     }
+   
+    public function viewMessages(User $user, Chat $chat): bool 
+    {
+        return $this->userBelongsToChat($user, $chat)
+            ? true
+            : false;
+    }
 }
