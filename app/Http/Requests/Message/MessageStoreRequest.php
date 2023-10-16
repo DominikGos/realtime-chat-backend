@@ -23,8 +23,8 @@ class MessageStoreRequest extends FormRequest
     {
         return [
             'text' => 'nullable|string',
-            'filesPaths' => 'nullable|array',
-            'filesPaths.*' => 'string'
+            'files_paths' => 'nullable|array',
+            'files_paths.*' => 'string'
         ];
     }
 }

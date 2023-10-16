@@ -41,7 +41,7 @@ class ChatController extends Controller
     public function store(ChatStoreRequest $request): JsonResponse
     {   
         $chat = new Chat();
-        $friend = User::findOrFail($request->validated()['friendId']);
+        $friend = User::findOrFail($request->validated()['friend_id']);
         $sharedChat = $this->chatService->findChat($friend);
 
         if($sharedChat) {

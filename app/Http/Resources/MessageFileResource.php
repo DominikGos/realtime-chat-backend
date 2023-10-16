@@ -16,7 +16,7 @@ class MessageFileResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'path' => $this->path,
+            'link' => asset($this->path),
         ];
     }
 }

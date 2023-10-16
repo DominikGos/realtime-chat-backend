@@ -34,6 +34,7 @@ class MessageController extends Controller
         $chat = Chat::findOrFail($chatId);
         $messages = $chat
             ->messages()
+            ->with('files')
             ->orderBy('id', 'desc')
             ->offset($start)
             ->limit($limit)
@@ -46,7 +47,7 @@ class MessageController extends Controller
 
     public function store(MessageStoreRequest $request, int $chatId): JsonResponse
     {
-        if( ! isset($request->validated()['filesPaths']) && ! isset($request->validated()['text']))
+        if( ! isset($request->validated()['files_paths']) && ! isset($request->validated()['text']))
             throw new Error('The message must contain text or files.');
 
         $chat = Chat::findOrFail($chatId);
@@ -54,7 +55,7 @@ class MessageController extends Controller
         $message->user()->associate(Auth::user());
         $message->chat()->associate($chat);
         $message->save();
-        $filesPaths = $request->validated()['filesPaths'] ?? [];
+        $filesPaths = $request->validated()['files_paths'] ?? [];
         $files = [];
 
         foreach($filesPaths as $path) {

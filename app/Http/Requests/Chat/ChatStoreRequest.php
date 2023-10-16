@@ -22,7 +22,7 @@ class ChatStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'friendId' => 'integer|min:0|required',
+            'friend_id' => 'integer|min:0|required',
         ];
     }
 }
