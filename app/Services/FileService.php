@@ -22,4 +22,19 @@ class FileService
 
         return $path;
     }
+    
+    public function destroy(string $fileLink): void
+    {
+        $filePath = $this->getFilePath($fileLink);
+
+        Storage::disk($this->disk)->delete($filePath);
+    }
+
+    public function getFilePath(string $linkToFile): string
+    {
+        $filePath = explode('storage/', $linkToFile);
+        $filePath = end($filePath);
+
+        return $filePath;
+    }
 }

@@ -9,20 +9,22 @@ use App\Http\Resources\MessageResource;
 use App\Models\Chat;
 use App\Models\Message;
 use App\Models\MessageFile;
+use App\Services\FileService;
 use App\Traits\HasFile;
 use Error;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class MessageController extends Controller
 {
     use HasFile;
 
+    private FileService $fileService;
     static string $filesDirectory = 'message';
 
     public function __construct() {
-        $this->initFileService(self::$filesDirectory);
+        $this->initFileService(self::$filesDirectory); //reuired for HasFile trait
+        $this->fileService = new FileService(self::$filesDirectory, 'public');
     }
 
     public function index(MessageIndexRequest $request, int $chatId): JsonResponse
@@ -69,6 +71,11 @@ class MessageController extends Controller
     public function destroy(int $messageId): JsonResponse
     {
         $message = Message::findOrFail($messageId);
+        
+        foreach($message->files as $file) {
+            $this->fileService->destroy($file->path);
+        }
+
         $message->delete();
 
         return new JsonResponse(null, 204);
