@@ -49,6 +49,9 @@ class MessageController extends Controller
             throw new Error('The message must contain text or files.');
 
         $chat = Chat::findOrFail($chatId);
+
+        $this->authorize('storeMessage', $chat);
+
         $message = new Message($request->validated());
         $message->user()->associate(Auth::user());
         $message->chat()->associate($chat);
@@ -67,10 +70,13 @@ class MessageController extends Controller
         ], 201);
     }
 
-    public function destroy(int $messageId): JsonResponse
+    public function destroy(int $chatId, int $messageId): JsonResponse
     {
+        $chat = Chat::findOrFail($chatId);
         $message = Message::findOrFail($messageId);
         
+        $this->authorize('destroyMessage', [$chat, $message]);
+
         foreach($message->files as $file) {
             $this->fileService->destroy($file->path);
         }
