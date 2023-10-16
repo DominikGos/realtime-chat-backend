@@ -28,7 +28,7 @@ class UserUpdateRequest extends FormRequest
             'email' => [
                 'email', 'min:2', 'max:255', 'required', Rule::unique('users', 'email')->ignore($this->route('id'))
             ],
-            'avatar_path' => 'nullable|string|max:255',
+            'avatar_link' => 'nullable|string|max:255',
         ];
     }
 }

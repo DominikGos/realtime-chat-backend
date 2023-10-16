@@ -49,11 +49,13 @@ class UserController extends Controller
 
         Gate::authorize('manage-profile', $user);
 
-        if(empty($request->validated()['avatar_path'])) {
+        if(empty($request->validated()['avatar_link'])) {
             $this->fileService->destroy($user->avatar_path);
         }
 
-        $user->update($request->validated());
+        $avatarPath = $this->fileService->getFilePath($request->validated()['avatar_link']);
+        $userData = array_merge($request->validated(), ['avatar_path' => $avatarPath]);
+        $user->update($userData);
 
         return new JsonResponse([
             'user' => UserResource::make($user)

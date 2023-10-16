@@ -19,7 +19,6 @@ class UserResource extends JsonResource
             'email' => $this->email,
             'first_name' => $this->first_name,
             'last_name' => $this->last_name,
-            'avatar_path' => $this->avatar_path,
             'avatar_link' => asset($this->avatar_path),
             'signed_in' => TimestampResource::make($this->signed_in),
             'created_at' => TimestampResource::make($this->created_at),
