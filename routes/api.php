@@ -42,6 +42,10 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::put('/{id}', [UserController::class, 'update'])->name('update');
 
         Route::delete('/{id}', [UserController::class, 'destroy'])->name('destroy');
+
+        Route::post('/files', [UserController::class, 'storeFile'])->name('files.store');
+
+        Route::delete('/files', [UserController::class, 'destroyFile'])->name('files.destroy');
     });
    
     Route::group(['as' => 'chats.', 'prefix' => '/chats'], function() {

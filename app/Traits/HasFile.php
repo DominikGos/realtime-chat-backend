@@ -22,6 +22,7 @@ Trait HasFile
 
         return new JsonResponse([
             'file_link' => asset($filePath),
+            'file_path' => $filePath,
         ], 201);
     }
 
