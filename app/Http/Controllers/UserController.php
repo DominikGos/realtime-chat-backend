@@ -10,6 +10,7 @@ use App\Services\FileService;
 use App\Traits\HasFile;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class UserController extends Controller
 {
@@ -46,6 +47,8 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
 
+        Gate::authorize('manage-profile', $user);
+
         if(empty($request->validated()['avatar_path'])) {
             $this->fileService->destroy($user->avatar_path);
         }
@@ -61,6 +64,8 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
 
+        Gate::authorize('manage-profile', $user);
+        
         if($user->avatar_path) {
             $this->fileService->destroy($user->avatar_path);
         }
