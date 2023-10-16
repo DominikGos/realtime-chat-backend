@@ -16,12 +16,10 @@ class UserController extends Controller
     use HasFile;
 
     static string $filesDirectory = 'user';
-    private FileService $fileService;
 
     public function __construct()
     {
         $this->initFileService(self::$filesDirectory);
-        $this->fileService = new FileService(self::$filesDirectory, 'public');
     }
 
     public function index(UserIndexRequest $request): JsonResponse

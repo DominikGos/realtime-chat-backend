@@ -19,12 +19,10 @@ class MessageController extends Controller
 {
     use HasFile;
 
-    private FileService $fileService;
     static string $filesDirectory = 'message';
 
     public function __construct() {
         $this->initFileService(self::$filesDirectory); //reuired for HasFile trait
-        $this->fileService = new FileService(self::$filesDirectory, 'public');
     }
 
     public function index(MessageIndexRequest $request, int $chatId): JsonResponse

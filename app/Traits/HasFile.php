@@ -9,7 +9,7 @@ use Illuminate\Http\JsonResponse;
 
 Trait HasFile
 {
-    private FileService $fileService;
+    public FileService $fileService;
 
     public function initFileService(string $directory, string $disk = 'public'): void
     {
