@@ -19,6 +19,7 @@ class MessageResource extends JsonResource
             'text' => $this->text,
             'created_at' => TimestampResource::make($this->created_at),
             'updated_at' => TimestampResource::make($this->updated_at),
+            'files' => MessageFileResource::collection($this->whenLoaded('files')),
             'user' => UserResource::make($this->whenLoaded('user')),
         ];
     }

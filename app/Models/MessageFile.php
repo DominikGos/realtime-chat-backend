@@ -8,4 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class MessageFile extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'path'
+    ];
 }

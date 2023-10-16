@@ -3,10 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Message\MessageIndexRequest;
+use App\Http\Requests\Message\MessageStoreRequest;
+use App\Http\Resources\MessageFileResource;
 use App\Http\Resources\MessageResource;
 use App\Models\Chat;
+use App\Models\Message;
+use App\Models\MessageFile;
+use Error;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class MessageController extends Controller
 {
@@ -25,5 +31,29 @@ class MessageController extends Controller
         return new JsonResponse([
             'messages' => MessageResource::collection($messages)
         ]);
+    }
+
+    public function store(MessageStoreRequest $request, int $chatId): JsonResponse
+    {
+        if( ! isset($request->validated()['filesPaths']) && ! isset($request->validated()['text']))
+            throw new Error('The message must contain text or files.');
+
+        $chat = Chat::findOrFail($chatId);
+        $message = new Message($request->validated());
+        $message->user()->associate(Auth::user());
+        $message->chat()->associate($chat);
+        $message->save();
+        $filesPaths = $request->validated()['filesPaths'] ?? [];
+        $files = [];
+
+        foreach($filesPaths as $path) {
+            $files[] = new MessageFile(['path' => $path]);
+        }
+
+        $message->files()->saveMany($files);
+        
+        return new JsonResponse([
+            'message' => MessageResource::make($message->load('files'))
+        ], 201);
     }
 }
