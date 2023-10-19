@@ -25,7 +25,7 @@ class LoginController extends Controller
 
         return new JsonResponse([
             'errors' => [
-                'email' => 'These credentials do not match our records.'
+                'email' => ['These credentials do not match our records.']
             ],
         ], 422);
     }
