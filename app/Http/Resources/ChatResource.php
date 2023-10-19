@@ -2,11 +2,13 @@
 
 namespace App\Http\Resources;
 
+use App\Traits\HasTimestamp;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ChatResource extends JsonResource
 {
+    use HasTimestamp;
     /**
      * Transform the resource into an array.
      *
@@ -16,8 +18,8 @@ class ChatResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'created_at' => TimestampResource::make($this->created_at),
-            'updated_at' => TimestampResource::make($this->updated_at),
+            'created_at' => $this->formatTimestamp($this->created_at),
+            'updated_at' => $this->formatTimestamp($this->updated_at),
             'last_message' => MessageResource::make($this->messages()->with('user')->latest()->first()),
             'users' => UserResource::collection($this->whenLoaded('users')),
         ];
