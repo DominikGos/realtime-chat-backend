@@ -14,9 +14,13 @@ class MessageFileResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $pathLink = $this->path
+            ? asset($this->path)
+            : null;
+
         return [
             'id' => $this->id,
-            'file_link' => asset($this->path),
+            'file_link' => $pathLink,
         ];
     }
 }

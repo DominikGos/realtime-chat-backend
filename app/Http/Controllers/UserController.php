@@ -26,7 +26,7 @@ class UserController extends Controller
     public function index(UserIndexRequest $request): JsonResponse
     {
         $start = $request->validated()['start'];
-        $limit = 10;
+        $limit = 15;
         $users = User::orderBy('id')->offset($start)->limit($limit)->get();
 
         return new JsonResponse([
