@@ -44,15 +44,15 @@ class ChatController extends Controller
         $friend = User::findOrFail($request->validated()['friend_id']);
         $sharedChat = $this->chatService->findChat($friend);
 
+        if($friend->id == Auth::id()) 
+            throw new Error('You cannot create chat with yourself.');
+            
         if($sharedChat) {
             return new JsonResponse([
                 'message' => 'The chat already exists.',
                 'chat' => ChatResource::make($sharedChat->load('users')),
             ]);
         }
-
-        if($friend->id == Auth::id()) 
-            throw new Error('You cannot create chat with yourself.');
 
         $chat->save();
         $chat->users()->saveMany([$friend, Auth::user()]);
