@@ -47,7 +47,7 @@ class ChatController extends Controller
         if($sharedChat) {
             return new JsonResponse([
                 'message' => 'The chat already exists.',
-                'chat' => ChatResource::make($sharedChat),
+                'chat' => ChatResource::make($sharedChat->load('users')),
             ]);
         }
 
@@ -58,7 +58,7 @@ class ChatController extends Controller
         $chat->users()->saveMany([$friend, Auth::user()]);
 
         return new JsonResponse([
-            'chat' => ChatResource::make($chat)
+            'chat' => ChatResource::make($chat->load('users'))
         ], 201);
     }
 }
