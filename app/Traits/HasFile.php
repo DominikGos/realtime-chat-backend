@@ -18,10 +18,15 @@ Trait HasFile
 
     public function storeFile(FileStoreRequest $request): JsonResponse
     {
-        $filePath = $this->fileService->store($request->file('file'));
+        $filesLinks = [];
+
+        foreach($request->file('files') as $file) {
+            $filePath = $this->fileService->store($file);
+            $filesLinks[] = asset($filePath);
+        }
 
         return new JsonResponse([
-            'file_link' => asset($filePath),
+            'files_links' => $filesLinks,
         ], 201);
     }
 
