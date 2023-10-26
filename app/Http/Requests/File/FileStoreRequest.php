@@ -23,7 +23,7 @@ class FileStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'files' => 'array|required',
+            'files' => 'array|required|max:5',
             'files.*' => [
                 'required', 
                 File::types(['image/jpeg', 'image/png', 'video/mp4', 'application/x-mpegURL', 'video/quicktime'])

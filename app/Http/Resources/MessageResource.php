@@ -17,12 +17,22 @@ class MessageResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $filesLinks = [];
+        $files = $this
+            ->files()
+            ->select('path')
+            ->get();
+
+        foreach($files as $file) {
+            $filesLinks[] = asset($file->path);
+        }
+
         return [
             'id' => $this->id,
             'text' => $this->text,
             'created_at' => $this->formatTimestamp($this->created_at),
             'updated_at' => $this->formatTimestamp($this->updated_at),
-            'files' => MessageFileResource::collection($this->files),
+            'files_links' => $filesLinks,
             'user' => UserResource::make($this->whenLoaded('user')),
         ];
     }

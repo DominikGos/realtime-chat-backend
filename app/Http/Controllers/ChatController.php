@@ -7,14 +7,10 @@ use App\Http\Requests\Chat\ChatStoreRequest;
 use App\Http\Resources\ChatResource;
 use App\Models\Chat;
 use App\Models\User;
-use App\Models\UserChat;
 use App\Services\ChatService;
 use Error;
 use Illuminate\Contracts\Database\Eloquent\Builder as EloquentBuilder;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ChatController extends Controller
