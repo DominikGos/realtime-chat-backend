@@ -24,6 +24,11 @@ class ChatPolicy
             : false;
     }
 
+    public function view(User $user, Chat $chat): bool 
+    {
+        return $this->userBelongsToChat($user, $chat);
+    }
+
     public function storeMessage(User $user, Chat $chat): bool 
     {
         return $this->userBelongsToChat($user, $chat)

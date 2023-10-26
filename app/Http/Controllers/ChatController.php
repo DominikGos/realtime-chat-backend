@@ -21,7 +21,7 @@ class ChatController extends Controller
     public function index(ChatIndexRequest $request): JsonResponse
     {
         $start = $request->validated()['start'];
-        $limit = 1;
+        $limit = 15;
         $chats = Chat::with(['users', 'messages' => function(EloquentBuilder $query) {
             $query->orderBy('created_at');
         }])
@@ -34,22 +34,33 @@ class ChatController extends Controller
         ]);
     }
 
+    public function get(int $id): JsonResponse
+    {
+        $chat = Chat::with('users')->findOrFail($id);
+
+        $this->authorize('view', $chat);
+        
+        return new JsonResponse([
+            'chat' => ChatResource::make($chat)
+        ]);
+    }   
+
     public function store(ChatStoreRequest $request): JsonResponse
     {   
-        $chat = new Chat();
         $friend = User::findOrFail($request->validated()['friend_id']);
-        $sharedChat = $this->chatService->findChat($friend);
+        $chat = $this->chatService->findChat($friend);
 
         if($friend->id == Auth::id()) 
             throw new Error('You cannot create chat with yourself.');
             
-        if($sharedChat) {
+        if($chat) {
             return new JsonResponse([
                 'message' => 'The chat already exists.',
-                'chat' => ChatResource::make($sharedChat->load('users')),
+                'chat' => ChatResource::make($chat->load('users')),
             ]);
         }
 
+        $chat = new Chat();
         $chat->save();
         $chat->users()->saveMany([$friend, Auth::user()]);
 
