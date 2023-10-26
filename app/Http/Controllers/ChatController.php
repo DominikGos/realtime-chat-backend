@@ -21,13 +21,16 @@ class ChatController extends Controller
     public function index(ChatIndexRequest $request): JsonResponse
     {
         $start = $request->validated()['start'];
-        $limit = 15;
-        $chats = Chat::with(['users', 'messages' => function(EloquentBuilder $query) {
-            $query->orderBy('created_at');
-        }])
+        $limit = $request->validated()['limit'] ?? 15;
+       
+        $chats = Auth::user()
+            ->chats()
+            ->with(['users', 'messages' => function(EloquentBuilder $query) {
+                $query->orderBy('created_at');
+            }])
             ->offset($start)
             ->limit($limit)
-            ->get();
+            ->get(); 
 
         return new JsonResponse([
             'chats' => ChatResource::collection($chats)
@@ -39,7 +42,7 @@ class ChatController extends Controller
         $chat = Chat::with('users')->findOrFail($id);
 
         $this->authorize('view', $chat);
-        
+
         return new JsonResponse([
             'chat' => ChatResource::make($chat)
         ]);

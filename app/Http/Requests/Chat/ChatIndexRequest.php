@@ -22,7 +22,8 @@ class ChatIndexRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'start' => 'required|integer|min:0'
+            'start' => 'required|integer|min:0',
+            'limit' => 'nullable|integer|min:0',
         ];
     }
 }
