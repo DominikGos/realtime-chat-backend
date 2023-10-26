@@ -21,14 +21,15 @@ class MessageController extends Controller
 
     static string $filesDirectory = 'message';
 
-    public function __construct() {
-        $this->initFileService(self::$filesDirectory); //reuired for HasFile trait
+    public function __construct()
+    {
+        $this->initFileService(self::$filesDirectory);
     }
 
-    public function index(MessageIndexRequest $request, int $chatId): JsonResponse //add authorization
+    public function index(MessageIndexRequest $request, int $chatId): JsonResponse
     {
         $start = $request->validated()['start'];
-        $limit = 10;
+        $limit = $request->validated()['limit'] ?? 15;
         $chat = Chat::findOrFail($chatId);
 
         $this->authorize('viewMessages', $chat);
@@ -48,7 +49,7 @@ class MessageController extends Controller
 
     public function store(MessageStoreRequest $request, int $chatId): JsonResponse
     {
-        if( ! isset($request->validated()['files_paths']) && ! isset($request->validated()['text']))
+        if (!isset($request->validated()['files_links']) && !isset($request->validated()['text']))
             throw new Error('The message must contain text or files.');
 
         $chat = Chat::findOrFail($chatId);
@@ -62,12 +63,12 @@ class MessageController extends Controller
         $filesLinks = $request->validated()['files_links'] ?? [];
         $files = [];
 
-        foreach($filesLinks as $link) {
+        foreach ($filesLinks as $link) {
             $files[] = new MessageFile(['path' => $this->fileService->getFilePath($link)]);
         }
 
         $message->files()->saveMany($files);
-        
+
         return new JsonResponse([
             'message' => MessageResource::make($message->load('files'))
         ], 201);
@@ -77,10 +78,10 @@ class MessageController extends Controller
     {
         $chat = Chat::findOrFail($chatId);
         $message = Message::findOrFail($messageId);
-        
+
         $this->authorize('destroyMessage', [$chat, $message]);
 
-        foreach($message->files as $file) {
+        foreach ($message->files as $file) {
             $this->fileService->destroy($file->path);
         }
 
