@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Chat\ChatIndexRequest;
 use App\Http\Requests\Chat\ChatStoreRequest;
 use App\Http\Resources\ChatResource;
 use App\Models\Chat;
 use App\Models\User;
 use App\Services\ChatService;
 use Error;
-use Illuminate\Contracts\Database\Eloquent\Builder as EloquentBuilder;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
@@ -18,20 +17,14 @@ class ChatController extends Controller
     public function __construct(private ChatService $chatService)
     {}
 
-    public function index(ChatIndexRequest $request): JsonResponse
+    public function index(): JsonResponse
     {
-        $start = $request->validated()['start'];
-        $limit = $request->validated()['limit'] ?? 15;
-       
         $chats = Auth::user()
             ->chats()
-            ->with(['users', 'messages' => function(EloquentBuilder $query) {
-                $query->orderBy('created_at');
-            }])
-            ->offset($start)
-            ->limit($limit)
-            ->get(); 
-
+            ->with(['lastMessage', 'users'])
+            ->get()
+            ->sortByDesc('lastMessage.created_at');
+        
         return new JsonResponse([
             'chats' => ChatResource::collection($chats)
         ]);
