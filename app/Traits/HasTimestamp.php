@@ -13,12 +13,15 @@ trait HasTimestamp
 
         $now = now();
         $timestamp = Carbon::parse($timestamp);
+        $date = '';
 
-        if ($timestamp->diffInDays($now) >= 1)
-            $timestamp = $timestamp->format('M d, Y');
-        else if ($timestamp->diffInDays($now) < 1)
-            $timestamp = $timestamp->format('G:i');
-
-        return $timestamp;
+        if ($timestamp->diffInYears($now) >= 1)
+            $date = $timestamp->format('M d Y');
+        else if($timestamp->diffInDays($now) >= 1)
+            $date = $timestamp->format('G:i M d');
+        else if ($timestamp->diffInDays($now) < 1) 
+            $date = $timestamp->format('G:i');
+        
+        return $date;
     }
 }
