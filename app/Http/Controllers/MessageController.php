@@ -47,9 +47,9 @@ class MessageController extends Controller
         ]);
     }
 
-    public function store(MessageStoreRequest $request, int $chatId): JsonResponse
+    public function store(MessageStoreRequest $request, int $chatId)
     {
-        if (!isset($request->validated()['files_links']) && !isset($request->validated()['text']))
+        if (empty($request->validated()['files_links']) && !isset($request->validated()['text']))
             throw new Error('The message must contain text or files.');
 
         $chat = Chat::findOrFail($chatId);
