@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\MessageSent;
 use App\Http\Requests\Message\MessageIndexRequest;
 use App\Http\Requests\Message\MessageStoreRequest;
 use App\Http\Resources\MessageFileResource;
@@ -69,6 +70,8 @@ class MessageController extends Controller
 
         $message->files()->saveMany($files);
 
+        MessageSent::dispatch($message, $chat);
+        
         return new JsonResponse([
             'message' => MessageResource::make($message->load('files'))
         ], 201);
