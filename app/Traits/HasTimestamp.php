@@ -12,7 +12,7 @@ trait HasTimestamp
             return null;
 
         $now = now();
-        $timestamp = Carbon::parse($timestamp);
+        $timestamp = Carbon::parse($timestamp)->setTimezone('GMT+1');
         $date = '';
 
         if ($timestamp->diffInYears($now) >= 1)
