@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Chat\ChatIndexRequest;
 use App\Http\Requests\Chat\ChatStoreRequest;
 use App\Http\Resources\ChatResource;
 use App\Models\Chat;
@@ -11,22 +12,31 @@ use Error;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ChatController extends Controller
 {
     public function __construct(private ChatService $chatService)
-    {}
-
-    public function index(): JsonResponse
     {
-        $chats = Auth::user()
-            ->chats()
-            ->with(['lastMessage', 'users', 'lastMessage.user'])
-            ->get()
-            ->sortByDesc('lastMessage.created_at');
-        
+    }
+
+    public function index(ChatIndexRequest $request): JsonResponse
+    {
+        $start = $request->validated()['start'];
+        $limit = $request->validated()['limit'] ?? 15;
+
+        $chats = DB::table('chats as ch')
+            ->select(['ch.*'])
+            ->leftJoin('user_chats', 'ch.id', '=', 'user_chats.chat_id')
+            ->leftJoin('users as u', 'u.id', '=', 'user_chats.user_id')
+            ->where("u.id", Auth::id())
+            ->orderBy('ch.added_message_at', 'desc')
+            ->offset($start)
+            ->limit($limit)
+            ->get();
+
         return new JsonResponse([
-            'chats' => ChatResource::collection($chats)
+            'chats' => $chats
         ]);
     }
 
@@ -39,17 +49,17 @@ class ChatController extends Controller
         return new JsonResponse([
             'chat' => ChatResource::make($chat)
         ]);
-    }   
+    }
 
     public function store(ChatStoreRequest $request): JsonResponse
-    {   
+    {
         $friend = User::findOrFail($request->validated()['friend_id']);
         $chat = $this->chatService->findChat($friend);
 
-        if($friend->id == Auth::id()) 
+        if ($friend->id == Auth::id())
             throw new Error('You cannot create chat with yourself.');
-            
-        if($chat) {
+
+        if ($chat) {
             return new JsonResponse([
                 'message' => 'The chat already exists.',
                 'chat' => ChatResource::make($chat->load('users')),
