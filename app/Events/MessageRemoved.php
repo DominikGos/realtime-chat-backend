@@ -13,21 +13,17 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class MessageSent implements ShouldBroadcast
+class MessageRemoved implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public MessageResource $messageResource;
-    /**
-     * Create a new event instance.
-     */
-    public function __construct(private Message $message, private Chat $chat)
+    public function __construct(private string $message, private Chat $chat)
     {
     }
 
     public function broadcastWith(): array
     {
-        return ['message' => MessageResource::make($this->message)];
+        return ['removed_message' => json_decode($this->message, true)];
     }
     /**
      * Get the channels the event should broadcast on.
@@ -37,6 +33,5 @@ class MessageSent implements ShouldBroadcast
     public function broadcastOn()
     {
         return new PrivateChannel('chat.' . $this->chat->id);
-        
     }
 }

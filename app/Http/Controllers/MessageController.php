@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\MessageRemoved;
 use App\Events\MessageSent;
 use App\Http\Requests\Message\MessageIndexRequest;
 use App\Http\Requests\Message\MessageStoreRequest;
@@ -89,6 +90,8 @@ class MessageController extends Controller
         }
 
         $message->delete();
+
+        MessageRemoved::dispatch(MessageResource::make($message)->toJson(), $chat);
 
         return new JsonResponse(null, 204);
     }
