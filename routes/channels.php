@@ -1,7 +1,11 @@
 <?php
 
+use App\Models\Chat;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Broadcast;
+use Illuminate\Support\Facades\Log;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,8 +22,11 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
 });
 
-Broadcast::channel('chat.65', function(User $user) {
-   // $userChat = $user->chats()->where('id', $chatId)->first();
-   // return (bool) $userChat;
-   return true;
+Broadcast::channel('chat.{chatId}', function(User $user, int $chatId) {
+    $chat = Chat::findOrFail($chatId);
+
+    return $user->can('view', $chat) 
+        ? true
+        : false;
+
 }, ['middleware' => ['auth:sanctum']]);
