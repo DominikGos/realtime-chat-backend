@@ -5,11 +5,14 @@ namespace App\Http\Controllers;
 use App\Http\Requests\User\UserIndexRequest;
 use App\Http\Requests\User\UserUpdateRequest;
 use App\Http\Resources\UserResource;
+use App\Models\Chat;
 use App\Models\User;
 use App\Services\FileService;
 use App\Traits\HasFile;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
 class UserController extends Controller
@@ -75,5 +78,14 @@ class UserController extends Controller
         $user->delete();
 
         return new JsonResponse(null, 204);
+    }
+    
+    public function userChatsIds(): JsonResponse 
+    {   
+        $ids = Auth::user()->chats()->pluck('chat_id');
+
+        return new JsonResponse([
+            'ids' => $ids
+        ]);
     }
 }
