@@ -26,8 +26,8 @@ class FileStoreRequest extends FormRequest
             'files' => 'array|required|max:5',
             'files.*' => [
                 'required', 
-                File::types(['image/jpeg', 'image/png', 'video/mp4', 'application/x-mpegURL', 'video/quicktime'])
-                    ->max('10mb')
+                File::types(['image/jpeg', 'image/png', 'image/gif', 'video/mp4'])
+                    ->max('15mb')
             ]
         ];
     }
