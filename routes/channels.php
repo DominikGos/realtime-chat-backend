@@ -18,8 +18,8 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
 });
 
-Broadcast::channel('chat.{chatId}', function(User $user, int $chatId) {
-    $userChat = $user->chats()->where('id', $chatId)->first();
-    
-    return (bool) $userChat;
-}, ['guards' => 'sanctum']);
+Broadcast::channel('chat.65', function(User $user) {
+   // $userChat = $user->chats()->where('id', $chatId)->first();
+   // return (bool) $userChat;
+   return true;
+}, ['middleware' => ['auth:sanctum']]);
