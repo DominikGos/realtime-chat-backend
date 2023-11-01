@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\ChatCreated;
 use App\Http\Requests\Chat\ChatStoreRequest;
 use App\Http\Resources\ChatResource;
 use App\Models\Chat;
@@ -59,9 +60,12 @@ class ChatController extends Controller
         $chat = new Chat();
         $chat->save();
         $chat->users()->saveMany([$friend, Auth::user()]);
+        $chat->load('users');
+
+        ChatCreated::dispatch($chat, $friend);
 
         return new JsonResponse([
-            'chat' => ChatResource::make($chat->load('users'))
+            'chat' => ChatResource::make($chat)
         ], 201);
     }
 }

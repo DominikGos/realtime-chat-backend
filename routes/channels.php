@@ -36,3 +36,7 @@ Broadcast::channel('user.updated', function(User $user) {
         ? true
         : false;
 });
+
+Broadcast::channel('new.chat.with.user.{userId}', function(User $user, int $userId) {
+    return $user->id === $userId;
+});
