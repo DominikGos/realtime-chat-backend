@@ -2,6 +2,7 @@
 
 namespace App\Events;
 
+use App\Http\Resources\ChatResource;
 use App\Http\Resources\MessageResource;
 use App\Models\Chat;
 use App\Models\Message;
@@ -23,13 +24,15 @@ class MessageSent implements ShouldBroadcast
     /**
      * Create a new event instance.
      */
-    public function __construct(private Message $message, private Chat $chat)
+    public function __construct(private Message $message)
     {
     }
 
     public function broadcastWith(): array
     {
-        return ['message' => MessageResource::make($this->message)];
+        return [
+            'message' => MessageResource::make($this->message),
+        ];
     }
     /**
      * Get the channels the event should broadcast on.
@@ -38,7 +41,7 @@ class MessageSent implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        Log::info('broadcasting on chat ', ['chatId' => $this->chat->id, 'mess' => $this->message]);
-        return new PrivateChannel('chat.' . $this->chat->id);
+        Log::info('broadcasting on chat ', ['chatId' => $this->message->chat->id, 'mess' => $this->message]);
+        return new PrivateChannel('chat.' . $this->message->chat->id);
     }
 }

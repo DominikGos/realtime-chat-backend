@@ -71,7 +71,7 @@ class MessageController extends Controller
 
         $message->files()->saveMany($files);
 
-        MessageSent::dispatch($message, $chat);
+        MessageSent::dispatch($message->load('chat.users'));
         
         return new JsonResponse([
             'message' => MessageResource::make($message->load('files'))
@@ -91,7 +91,7 @@ class MessageController extends Controller
 
         $message->delete();
 
-        MessageRemoved::dispatch(MessageResource::make($message)->toJson(), $chat);
+        MessageRemoved::dispatch(MessageResource::make($message->load('chat'))->toJson(), $chat);
 
         return new JsonResponse(null, 204);
     }
