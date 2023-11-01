@@ -9,6 +9,7 @@ use App\Http\Resources\ChatResource;
 use App\Http\Resources\UserResource;
 use App\Models\Chat;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -24,7 +25,9 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+    return new JsonResponse([
+        'user' =>  UserResource::make($request->user())
+    ]);
 });
 
 Route::post('/register', [RegisterController::class, 'register'])->name('register');

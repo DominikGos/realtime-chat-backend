@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Events\UserUpdated;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\JsonResponse;
@@ -18,6 +19,8 @@ class LoginController extends Controller
             $user->signed_in = now();
             $user->save();
             $token = $user->createToken('app', ['user'])->plainTextToken;
+
+            UserUpdated::dispatch($user);
 
             return new JsonResponse([
                 'user' => UserResource::make($user),
@@ -40,6 +43,8 @@ class LoginController extends Controller
         $user->currentAccessToken()->delete();
         $user->save();
 
+        UserUpdated::dispatch($user);
+        
         return new JsonResponse(null, 204);
     }
 }

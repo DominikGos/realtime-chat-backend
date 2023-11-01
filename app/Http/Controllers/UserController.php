@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\UserUpdated;
 use App\Http\Requests\User\UserIndexRequest;
 use App\Http\Requests\User\UserUpdateRequest;
 use App\Http\Resources\UserResource;
@@ -60,6 +61,8 @@ class UserController extends Controller
         $userData = array_merge($request->validated(), ['avatar_path' => $avatarPath]);
         $user->update($userData);
 
+        UserUpdated::dispatch($user);
+        
         return new JsonResponse([
             'user' => UserResource::make($user)
         ]);

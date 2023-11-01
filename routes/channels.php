@@ -30,3 +30,9 @@ Broadcast::channel('chat.{chatId}', function(User $user, int $chatId) {
         : false;
 
 }, ['middleware' => ['auth:sanctum']]);
+
+Broadcast::channel('user.updated', function(User $user) {
+    return $user 
+        ? true
+        : false;
+});
