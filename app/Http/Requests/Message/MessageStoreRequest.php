@@ -6,6 +6,8 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class MessageStoreRequest extends FormRequest
 {
+    protected $stopOnFirstFailure = true;
+    
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -23,7 +25,7 @@ class MessageStoreRequest extends FormRequest
     {
         return [
             'text' => 'nullable|string',
-            'files_links' => 'nullable|array',
+            'files_links' => 'nullable|array|max:5',
             'files_links.*' => 'string'
         ];
     }
