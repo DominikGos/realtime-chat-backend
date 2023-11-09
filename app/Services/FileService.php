@@ -26,7 +26,11 @@ class FileService
     public function destroy(string $fileLink): void
     {
         $filePath = $this->getFilePath($fileLink);
-        $filePath = str_replace('storage/', '', $filePath);
+
+        if($filePath) {
+            $filePath = str_replace('storage/', '', $filePath);
+        }
+
         Storage::disk($this->disk)->delete($filePath);
     }
 
