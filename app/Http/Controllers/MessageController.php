@@ -11,6 +11,7 @@ use App\Http\Resources\MessageResource;
 use App\Models\Chat;
 use App\Models\Message;
 use App\Models\MessageFile;
+use App\Models\UnreadMessage;
 use App\Services\FileService;
 use App\Traits\HasFile;
 use Error;
@@ -75,6 +76,15 @@ class MessageController extends Controller
         }
 
         $message->files()->saveMany($files);
+        $unreadMessage = new UnreadMessage();
+        $unreadMessage->message()->associate($message);
+        
+        foreach($chat->users as $user) {
+            if($user->id != Auth::id()) {
+                $unreadMessage->unreadBy()->associate($user);
+                $unreadMessage->save();
+            }
+        }
 
         MessageSent::dispatch($message->load('chat.users'));
         
