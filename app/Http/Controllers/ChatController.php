@@ -22,10 +22,10 @@ class ChatController extends Controller
     {
         $chats = Auth::user()
             ->chats()
-            ->with(['lastMessage', 'users', 'lastMessage.user'])
+            ->with(['lastMessage', 'users', 'lastMessage.user', 'unreadMessages'])
             ->get()
             ->sortByDesc('lastMessage.created_at');
-        
+
         return new JsonResponse([
             'chats' => ChatResource::collection($chats)
         ]);

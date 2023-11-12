@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\UnreadMessageController;
 use App\Http\Controllers\UserController;
 use App\Http\Resources\ChatResource;
 use App\Http\Resources\UserResource;
@@ -69,5 +70,7 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::post('/messages/files', [MessageController::class, 'storeFile'])->name('messages.files.store');
 
         Route::delete('/messages/files', [MessageController::class, 'destroyFile'])->name('messages.files.destroy');
+
+        Route::delete('/{id}/unread-messages', [UnreadMessageController::class, 'destroy'])->name('unread.messages.destroy');
     });
 });
