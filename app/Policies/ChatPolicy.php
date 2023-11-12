@@ -4,8 +4,10 @@ namespace App\Policies;
 
 use App\Models\Chat;
 use App\Models\Message;
+use App\Models\UnreadMessage;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
 class ChatPolicy
@@ -48,5 +50,10 @@ class ChatPolicy
         return $this->userBelongsToChat($user, $chat)
             ? true
             : false;
+    }
+
+    public function destroyUnreadMessages(User $user, Chat $chat): bool 
+    {
+        return $this->userBelongsToChat($user, $chat);
     }
 }
