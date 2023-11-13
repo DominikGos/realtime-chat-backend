@@ -49,11 +49,11 @@ Route::middleware('auth:sanctum')->group(function() {
 
         Route::post('/files', [UserController::class, 'storeFile'])->name('files.store');
 
-        Route::get('/{userName}', [UserController::class, 'search'])->name('search');
-
-        Route::delete('/files', [UserController::class, 'destroyFile'])->name('files.destroy');
-
         Route::get('/chats-ids', [UserController::class, 'userChatsIds'])->name('chats.ids');
+        
+        Route::delete('/files', [UserController::class, 'destroyFile'])->name('files.destroy');
+        
+        Route::get('/{userName}', [UserController::class, 'search'])->name('search');
     });
    
     Route::group(['as' => 'chats.', 'prefix' => '/chats'], function() {
