@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\UserUpdated;
 use App\Http\Requests\User\UserIndexRequest;
+use App\Http\Requests\User\UserSearchRequest;
 use App\Http\Requests\User\UserUpdateRequest;
 use App\Http\Resources\UserResource;
 use App\Models\Chat;
@@ -93,6 +94,28 @@ class UserController extends Controller
 
         return new JsonResponse([
             'ids' => $ids
+        ]);
+    }
+
+    public function search(string $userName): JsonResponse 
+    {
+        $firstPart = '';
+        $secondPart = '';
+        $userNameParts = explode(' ', $userName);
+        $firstPart = $userNameParts[0];
+        $secondPart = $userNameParts[1] ?? null;
+
+
+        $users = User::where('first_name', 'like', "$firstPart%")
+            ->orWhere('last_name', 'like', "$firstPart%")
+            ->when($secondPart, function(Builder $query, string $secondPart) {
+                $query->where('last_name', 'like', "$secondPart%")
+                    ->orWhere('first_name', 'like', "$secondPart%");
+            })
+            ->get();
+
+        return new JsonResponse([
+            'users' => UserResource::collection($users)
         ]);
     }
 }
