@@ -54,9 +54,7 @@ class MessageController extends Controller
     {
         if (empty($request->validated()['files_links']) && !isset($request->validated()['text'])) {
             return new JsonResponse([
-                'errors' => [
-                    'message' => ['The message must contain text or files.']
-                ],
+                'message' => 'The message must contain text or files.'
             ], 422);
         }
 
@@ -78,16 +76,16 @@ class MessageController extends Controller
         $message->files()->saveMany($files);
         $unreadMessage = new UnreadMessage();
         $unreadMessage->message()->associate($message);
-        
-        foreach($chat->users as $user) {
-            if($user->id != Auth::id()) {
+
+        foreach ($chat->users as $user) {
+            if ($user->id != Auth::id()) {
                 $unreadMessage->unreadBy()->associate($user);
                 $unreadMessage->save();
             }
         }
 
         MessageSent::dispatch($message->load('chat.users'));
-        
+
         return new JsonResponse([
             'message' => MessageResource::make($message->load('files'))
         ], 201);
