@@ -19,8 +19,8 @@ class FileService
     public function store(UploadedFile $file): string
     {
         $path = $file->store($this->directory, $this->disk);
-
-        return 'storage/' . $path;
+        
+        return $path;
     }
     
     public function destroy(string $fileLink): void
@@ -28,7 +28,7 @@ class FileService
         $filePath = $this->getFilePath($fileLink);
 
         if($filePath) {
-            $filePath = str_replace('storage/', '', $filePath);
+            $filePath = str_replace('storage/' . $this->disk . '/', '', $filePath);
         }
 
         Storage::disk($this->disk)->delete($filePath);

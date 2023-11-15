@@ -22,11 +22,12 @@ class MessageController extends Controller
 {
     use HasFile;
 
-    static string $filesDirectory = 'message';
+    static string $storageDisk = 'messages';
+    static string $filesDirectory = '/';
 
     public function __construct()
     {
-        $this->initFileService(self::$filesDirectory);
+        $this->initFileService(self::$filesDirectory, self::$storageDisk);
     }
 
     public function index(MessageIndexRequest $request, int $chatId): JsonResponse

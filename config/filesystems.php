@@ -39,7 +39,23 @@ return [
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
-            'url' => env('APP_URL').'/storage',
+            'url' => env('APP_URL').'storage',
+            'visibility' => 'public',
+            'throw' => false,
+        ],
+
+        'messages' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/messages'),
+            'url' => env('APP_URL').'storage/messages',
+            'visibility' => 'public',
+            'throw' => false,
+        ],
+
+        'avatars' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/avatars'),
+            'url' => env('APP_URL').'storage/avatars',
             'visibility' => 'public',
             'throw' => false,
         ],

@@ -21,11 +21,12 @@ class UserController extends Controller
 {
     use HasFile;
 
-    static string $filesDirectory = 'user';
+    static string $filesDirectory = '/';
+    static string $storageDisk = 'avatars';
 
     public function __construct()
     {
-        $this->initFileService(self::$filesDirectory);
+        $this->initFileService(self::$filesDirectory, self::$storageDisk);
     }
 
     public function index(UserIndexRequest $request): JsonResponse
