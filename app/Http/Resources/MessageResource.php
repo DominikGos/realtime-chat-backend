@@ -18,10 +18,8 @@ class MessageResource extends JsonResource
     public function toArray(Request $request): array
     {
         $filesLinks = [];
-        $files = $this
-            ->files()
-            ->select('path')
-            ->get();
+       
+        $files = $this->whenLoaded('files');
 
         foreach($files as $file) {
             $filesLinks[] = asset($file->path);

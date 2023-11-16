@@ -22,7 +22,7 @@ class ChatController extends Controller
     {
         $chats = Auth::user()
             ->chats()
-            ->with(['lastMessage', 'users', 'lastMessage.user', 'unreadMessages'])
+            ->with(['lastMessage', 'users', 'lastMessage.user', 'unreadMessages', 'lastMessage.files'])
             ->get()
             ->sortByDesc('lastMessage.created_at');
 

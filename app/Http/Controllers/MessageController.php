@@ -85,7 +85,7 @@ class MessageController extends Controller
             }
         }
 
-        MessageSent::dispatch($message->load('chat.users'));
+        MessageSent::dispatch($message->load(['chat.users', 'files']));
 
         return new JsonResponse([
             'message' => MessageResource::make($message->load('files'))
