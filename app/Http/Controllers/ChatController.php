@@ -22,7 +22,8 @@ class ChatController extends Controller
     {
         $chats = Auth::user()
             ->chats()
-            ->with(['lastMessage', 'users', 'lastMessage.user', 'unreadMessages', 'lastMessage.files'])
+            ->with(['lastMessage', 'users', 'lastMessage.user', 'lastMessage.files'])
+            ->withCount('unreadMessages')
             ->get()
             ->sortByDesc('lastMessage.created_at');
 
@@ -53,7 +54,7 @@ class ChatController extends Controller
         if($chat) {
             return new JsonResponse([
                 'message' => 'The chat already exists.',
-                'chat' => ChatResource::make($chat->load('users')),
+                'chat' => ChatResource::make($chat->load('users')->loadCount('unreadMessages')),
             ]);
         }
 
