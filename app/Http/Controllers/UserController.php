@@ -52,21 +52,22 @@ class UserController extends Controller
     public function update(UserUpdateRequest $request, int $id): JsonResponse
     {
         $user = User::findOrFail($id);
+        $avatarPath = $user->avatar_path;
 
         Gate::authorize('manage-profile', $user);
         
         if(empty($request->validated()['avatar_link']) && isset($user->avatar_path)) {
             $this->fileService->destroy($user->avatar_path);
-            $user->avatar_path = null;
-            $user->save();
+            $avatarPath = null;
         }
 
         if($request->validated()['avatar_link']) {
             $avatarPath = $this->fileService->getFilePath($request->validated()['avatar_link']);
-            $userData = array_merge($request->validated(), ['avatar_path' => $avatarPath]);
-            $user->update($userData);
         }
-
+        
+        $userData = array_merge($request->validated(), ['avatar_path' => $avatarPath]);
+        $user->update($userData);
+        
         UserUpdated::dispatch($user);
         
         return new JsonResponse([
