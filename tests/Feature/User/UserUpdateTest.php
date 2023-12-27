@@ -8,6 +8,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
+use Tests\Services\UserTestService;
 use Tests\TestCase;
 
 class UserUpdateTest extends TestCase
@@ -22,15 +23,7 @@ class UserUpdateTest extends TestCase
 
         Sanctum::actingAs($user);
 
-        $response = $this->putJson(
-            route('users.update', ['id' => $user->id]),
-            [
-                'first_name' => $updatedUserData->first_name,
-                'last_name' => $updatedUserData->last_name,
-                'email' => $updatedUserData->email,
-                'avatar_link' => null,
-            ]
-        );
+        $response = $this->updateUser($updatedUserData, $user->id);
 
         $response
             ->assertOk()
@@ -42,16 +35,11 @@ class UserUpdateTest extends TestCase
     public function test_user_cannot_update_own_profile_with_incorrect_credentials(): void
     {
         $user = User::factory()->create();
-        $incorrectFirstName = '';
+        $incorrectUserData = User::factory()->create(['first_name' => '']);
 
         Sanctum::actingAs($user);
 
-        $response = $this->putJson(
-            route('users.update', ['id' => $user->id]),
-            [
-                'first_name' => $incorrectFirstName,
-            ]
-        );
+        $response = $this->updateUser($incorrectUserData, $user->id);
 
         $response
             ->assertUnprocessable()
@@ -67,16 +55,8 @@ class UserUpdateTest extends TestCase
 
         Sanctum::actingAs($user);
 
-        $response = $this->putJson(
-            route('users.update', ['id' => $profileOwner->id]),
-            [
-                'first_name' => $updatedUserData->first_name,
-                'last_name' => $updatedUserData->last_name,
-                'email' => $updatedUserData->email,
-                'avatar_link' => null,
-            ]
-        );
-
+        $response = $this->updateUser($updatedUserData, $profileOwner->id);
+        
         $response
             ->assertForbidden()
             ->assertJsonMissingPath('user');
