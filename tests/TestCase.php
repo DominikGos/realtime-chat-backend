@@ -12,7 +12,7 @@ abstract class TestCase extends BaseTestCase
     use CreatesApplication;
     use RefreshDatabase;
 
-    public function updateUser(User $userData, int $profileId): TestResponse
+    public function updateUser(User $userData, int $profileId, string $avatarLink = null): TestResponse
     {
         return $this->putJson(
             route('users.update', ['id' => $profileId]),
@@ -20,7 +20,7 @@ abstract class TestCase extends BaseTestCase
                 'first_name' => $userData->first_name,
                 'last_name' => $userData->last_name,
                 'email' => $userData->email,
-                'avatar_link' => null,
+                'avatar_link' => $avatarLink,
             ]
         );
     }
