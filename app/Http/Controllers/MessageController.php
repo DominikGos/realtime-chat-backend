@@ -71,7 +71,7 @@ class MessageController extends Controller
         $files = [];
 
         foreach ($filesLinks as $link) {
-            $files[] = new MessageFile(['path' => $this->fileService->getFilePath($link)]);
+            $files[] = new MessageFile(['path' => $link]);
         }
 
         $message->files()->saveMany($files);

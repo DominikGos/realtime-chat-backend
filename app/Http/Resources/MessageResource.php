@@ -22,7 +22,7 @@ class MessageResource extends JsonResource
         $files = $this->whenLoaded('files');
 
         foreach($files as $file) {
-            $filesLinks[] = asset($file->path);
+            $filesLinks[] = $file->path;
         }
 
         return [

@@ -62,7 +62,7 @@ class UserController extends Controller
         }
 
         if($request->validated()['avatar_link']) {
-            $avatarPath = $this->fileService->getFilePath($request->validated()['avatar_link']);
+            $avatarPath = $request->validated()['avatar_link'];
         }
         
         $userData = array_merge($request->validated(), ['avatar_path' => $avatarPath]);
