@@ -17,16 +17,12 @@ class UserResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $avatarLink = $this->avatar_path
-            ? asset($this->avatar_path)
-            : null;
-
         return [
             'id' => $this->id,
             'email' => $this->email,
             'first_name' => $this->first_name,
             'last_name' => $this->last_name,
-            'avatar_link' => $avatarLink,
+            'avatar_link' => $this->avatar_path,
             'signed_in' => $this->formatTimestamp($this->signed_in),
             'created_at' => $this->formatTimestamp($this->created_at),
             'updated_at' => $this->formatTimestamp($this->updated_at),

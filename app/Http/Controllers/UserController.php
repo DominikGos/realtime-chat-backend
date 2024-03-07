@@ -21,8 +21,8 @@ class UserController extends Controller
 {
     use HasFile;
 
-    static string $filesDirectory = '/';
-    static string $storageDisk = 'avatars';
+    static string $filesDirectory = '/avatars';
+    static string $storageDisk = 's3';
 
     public function __construct()
     {
@@ -62,7 +62,7 @@ class UserController extends Controller
         }
 
         if($request->validated()['avatar_link']) {
-            $avatarPath = $this->fileService->getFilePath($request->validated()['avatar_link']);
+            $avatarPath = $request->validated()['avatar_link'];
         }
         
         $userData = array_merge($request->validated(), ['avatar_path' => $avatarPath]);

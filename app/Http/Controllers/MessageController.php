@@ -22,8 +22,8 @@ class MessageController extends Controller
 {
     use HasFile;
 
-    static string $storageDisk = 'messages';
-    static string $filesDirectory = '/';
+    static string $filesDirectory = '/messages';
+    static string $storageDisk = 's3';
 
     public function __construct()
     {
@@ -71,7 +71,7 @@ class MessageController extends Controller
         $files = [];
 
         foreach ($filesLinks as $link) {
-            $files[] = new MessageFile(['path' => $this->fileService->getFilePath($link)]);
+            $files[] = new MessageFile(['path' => $link]);
         }
 
         $message->files()->saveMany($files);
