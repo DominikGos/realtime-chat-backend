@@ -22,8 +22,8 @@ class MessageController extends Controller
 {
     use HasFile;
 
-    static string $storageDisk = 'messages';
-    static string $filesDirectory = '/';
+    static string $filesDirectory = '/messages';
+    static string $storageDisk = 's3';
 
     public function __construct()
     {

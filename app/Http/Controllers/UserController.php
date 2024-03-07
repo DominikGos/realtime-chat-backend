@@ -21,8 +21,8 @@ class UserController extends Controller
 {
     use HasFile;
 
-    static string $filesDirectory = '/';
-    static string $storageDisk = 'avatars';
+    static string $filesDirectory = '/avatars';
+    static string $storageDisk = 's3';
 
     public function __construct()
     {

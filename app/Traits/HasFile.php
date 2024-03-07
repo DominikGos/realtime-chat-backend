@@ -5,8 +5,10 @@ namespace App\Traits;
 use App\Http\Requests\File\FileDestroyRequest;
 use App\Http\Requests\File\FileStoreRequest;
 use App\Services\FileService;
+use Error;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 Trait HasFile
 {
@@ -14,7 +16,7 @@ Trait HasFile
     private string $disk;
     private string $directory;
 
-    public function initFileService(string $directory, string $disk = 'public'): void
+    public function initFileService(string $directory, string $disk = 's3'): void
     {
         $this->directory = $directory;
         $this->disk = $disk;
@@ -23,12 +25,16 @@ Trait HasFile
 
     public function storeFile(FileStoreRequest $request): JsonResponse
     {
-        $filesLinks = [];
-
-        foreach($request->file('files') as $file) {
-            $filePath = $this->fileService->store($file);
-
-            $filesLinks[] = Storage::disk($this->disk)->url($filePath);
+        try {
+            $filesLinks = [];
+    
+            foreach($request->file('files') as $file) {
+                $filePath = $this->fileService->store($file);
+    
+                $filesLinks[] = Storage::disk($this->disk)->url($filePath);
+            }
+        } catch (Throwable $th) {
+            throw new Error('Something went wrong with file upload');
         }
 
         return new JsonResponse([
