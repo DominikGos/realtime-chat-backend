@@ -3,6 +3,7 @@
 namespace Tests\Feature\User;
 
 use App\Events\UserUpdated;
+use App\Http\Controllers\UserController;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -67,7 +68,7 @@ class UserUpdateTest extends TestCase
     public function test_user_can_store_avatar_and_assign_it_to_his_profile(): void
     {
         $user = User::factory()->create(['avatar_path' => null]);
-        Storage::fake('avatars');
+        Storage::fake('s3');
         Sanctum::actingAs($user);
         
         $avatarName = 'avatar.jpg';
@@ -80,8 +81,9 @@ class UserUpdateTest extends TestCase
         
         $response->assertCreated();
         $avatarLink = $response->json('files_links.0');
+        
         $this->assertNotEmpty($avatarLink);
-        Storage::disk('avatars')->assertExists($avatar->hashName());
+        Storage::disk('s3')->assertExists(UserController::$filesDirectory . '/' . $avatar->hashName());
 
         $response = $this->updateUser($user, $user->id, $avatarLink);
 
