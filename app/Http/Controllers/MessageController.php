@@ -6,16 +6,15 @@ use App\Events\MessageRemoved;
 use App\Events\MessageSent;
 use App\Http\Requests\Message\MessageIndexRequest;
 use App\Http\Requests\Message\MessageStoreRequest;
-use App\Http\Resources\MessageFileResource;
 use App\Http\Resources\MessageResource;
 use App\Models\Chat;
 use App\Models\Message;
-use App\Models\MessageFile;
-use App\Models\UnreadMessage;
 use App\Services\MessageService;
 use App\Traits\HasFile;
+use Error;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class MessageController extends Controller
 {
@@ -64,19 +63,34 @@ class MessageController extends Controller
 
         $this->authorize('storeMessage', $chat);
 
-        $message = new Message($request->validated());
+        $message = null;
 
-        $this->messageService->storeMessage($message, Auth::user(), $chat, $request->validated()['answer_to_message_id'] ?? null);
+        try {
+            DB::beginTransaction();
 
-        $this->messageService->storeMessageFiles($request->validated()['files_links'] ?? [], $message);
+            $message = new Message($request->validated());
 
-        $this->messageService->storeUnreadMessages($message, Auth::user(), $chat);
+            $this->messageService->storeMessage($message, Auth::user(), $chat, $request->validated()['answer_to_message_id'] ?? null);
 
-        MessageSent::dispatch($message->load(['chat.users', 'files', 'answerToMessage', 'answerToMessage.files']));
+            $this->messageService->storeMessageFiles($request->validated()['files_links'] ?? [], $message);
 
-        return new JsonResponse([
-            'message' => MessageResource::make($message->load('files'))
-        ], 201);
+            $this->messageService->storeUnreadMessages($message, Auth::user(), $chat);
+
+            DB::commit();
+
+            MessageSent::dispatch($message->load(['chat.users', 'files', 'answerToMessage', 'answerToMessage.files']));
+
+            return new JsonResponse([
+                'message' => MessageResource::make($message->load('files'))
+            ], 201);
+        } catch (\Throwable $th) {
+
+            DB::rollBack();
+
+            return new JsonResponse([
+                'message' => 'Something went wrong while saving your message.'
+            ], 422);
+        }
     }
 
     public function destroy(int $chatId, int $messageId): JsonResponse
