@@ -41,7 +41,7 @@ class MessageController extends Controller
 
         $messages = $chat
             ->messages()
-            ->with(['files', 'user'])
+            ->with(['files', 'user', 'answerToMessage', 'answerToMessage.files'])
             ->orderBy('id', 'desc')
             ->offset($start)
             ->limit($limit)
@@ -52,7 +52,7 @@ class MessageController extends Controller
         ]);
     }
 
-    public function store(MessageStoreRequest $request, int $chatId)
+    public function store(MessageStoreRequest $request, int $chatId): JsonResponse
     {
         if (empty($request->validated()['files_links']) && !isset($request->validated()['text'])) {
             return new JsonResponse([
@@ -65,14 +65,14 @@ class MessageController extends Controller
         $this->authorize('storeMessage', $chat);
 
         $message = new Message($request->validated());
-        
-        $this->messageService->storeMessage($message, Auth::user(),$chat);
 
-        $this->messageService->storeMessageFiles($request->validated()['files_links'], $message);
+        $this->messageService->storeMessage($message, Auth::user(), $chat, $request->validated()['answer_to_message_id'] ?? null);
+
+        $this->messageService->storeMessageFiles($request->validated()['files_links'] ?? [], $message);
 
         $this->messageService->storeUnreadMessages($message, Auth::user(), $chat);
 
-        MessageSent::dispatch($message->load(['chat.users', 'files']));
+        MessageSent::dispatch($message->load(['chat.users', 'files', 'answerToMessage', 'answerToMessage.files']));
 
         return new JsonResponse([
             'message' => MessageResource::make($message->load('files'))

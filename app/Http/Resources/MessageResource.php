@@ -31,6 +31,7 @@ class MessageResource extends JsonResource
             'created_at' => $this->formatTimestamp($this->created_at),
             'updated_at' => $this->formatTimestamp($this->updated_at),
             'files_links' => $filesLinks,
+            'answer_to_message' => MessageResource::make($this->whenLoaded('answerToMessage')),
             'user' => UserResource::make($this->whenLoaded('user')),
             'chat' => ChatResource::make($this->whenLoaded('chat'))
         ];

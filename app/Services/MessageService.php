@@ -9,10 +9,14 @@ use App\Models\UnreadMessage;
 use App\Models\User;
 
 class MessageService {
-    public function storeMessage(Message $message, User $author, Chat $chat): void
+    public function storeMessage(Message $message, User $author, Chat $chat, ?int $answerToMessageId): void
     {
         $message->user()->associate($author);
         $message->chat()->associate($chat);
+        
+        if($answerToMessageId) 
+            $message->answer_to_message_id = $answerToMessageId;
+
         $message->save();
     }
 
@@ -20,7 +24,7 @@ class MessageService {
     {
         $files = [];
 
-        foreach ($filesLinks ?? [] as $link) {
+        foreach ($filesLinks as $link) {
             $files[] = new MessageFile(['path' => $link]);
         }
 
