@@ -26,7 +26,8 @@ class MessageStoreRequest extends FormRequest
         return [
             'text' => 'nullable|string',
             'files_links' => 'nullable|array|max:5',
-            'files_links.*' => 'string'
+            'files_links.*' => 'string',
+            'answer_to_message_id' => 'nullable|integer'
         ];
     }
 }

@@ -29,4 +29,9 @@ class Message extends Model
     {
         return $this->belongsTo(Chat::class);
     }
+
+    public function answerToMessage(): BelongsTo 
+    {
+        return $this->belongsTo(Message::class, 'answer_to_message_id');
+    }
 }

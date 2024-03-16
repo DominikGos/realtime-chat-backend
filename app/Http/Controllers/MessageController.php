@@ -12,9 +12,8 @@ use App\Models\Chat;
 use App\Models\Message;
 use App\Models\MessageFile;
 use App\Models\UnreadMessage;
-use App\Services\FileService;
+use App\Services\MessageService;
 use App\Traits\HasFile;
-use Error;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
@@ -24,10 +23,12 @@ class MessageController extends Controller
 
     static string $filesDirectory = '/messages';
     static string $storageDisk = 's3';
+    private MessageService $messageService;
 
     public function __construct()
     {
         $this->initFileService(self::$filesDirectory, self::$storageDisk);
+        $this->messageService = new MessageService;
     }
 
     public function index(MessageIndexRequest $request, int $chatId): JsonResponse
@@ -40,7 +41,7 @@ class MessageController extends Controller
 
         $messages = $chat
             ->messages()
-            ->with(['files', 'user'])
+            ->with(['files', 'user', 'answerToMessage', 'answerToMessage.files'])
             ->orderBy('id', 'desc')
             ->offset($start)
             ->limit($limit)
@@ -51,7 +52,7 @@ class MessageController extends Controller
         ]);
     }
 
-    public function store(MessageStoreRequest $request, int $chatId)
+    public function store(MessageStoreRequest $request, int $chatId): JsonResponse
     {
         if (empty($request->validated()['files_links']) && !isset($request->validated()['text'])) {
             return new JsonResponse([
@@ -64,28 +65,14 @@ class MessageController extends Controller
         $this->authorize('storeMessage', $chat);
 
         $message = new Message($request->validated());
-        $message->user()->associate(Auth::user());
-        $message->chat()->associate($chat);
-        $message->save();
-        $filesLinks = $request->validated()['files_links'] ?? [];
-        $files = [];
 
-        foreach ($filesLinks as $link) {
-            $files[] = new MessageFile(['path' => $link]);
-        }
+        $this->messageService->storeMessage($message, Auth::user(), $chat, $request->validated()['answer_to_message_id'] ?? null);
 
-        $message->files()->saveMany($files);
-        $unreadMessage = new UnreadMessage();
-        $unreadMessage->message()->associate($message);
+        $this->messageService->storeMessageFiles($request->validated()['files_links'] ?? [], $message);
 
-        foreach ($chat->users as $user) {
-            if ($user->id != Auth::id()) {
-                $unreadMessage->unreadBy()->associate($user);
-                $unreadMessage->save();
-            }
-        }
+        $this->messageService->storeUnreadMessages($message, Auth::user(), $chat);
 
-        MessageSent::dispatch($message->load(['chat.users', 'files']));
+        MessageSent::dispatch($message->load(['chat.users', 'files', 'answerToMessage', 'answerToMessage.files']));
 
         return new JsonResponse([
             'message' => MessageResource::make($message->load('files'))
