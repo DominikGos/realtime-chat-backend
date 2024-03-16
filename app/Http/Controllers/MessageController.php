@@ -40,7 +40,7 @@ class MessageController extends Controller
 
         $messages = $chat
             ->messages()
-            ->with(['files', 'user', 'answerToMessage', 'answerToMessage.files'])
+            ->with(['files', 'user', 'answerToMessage', 'answerToMessage.files', 'answerToMessage.user'])
             ->orderBy('id', 'desc')
             ->offset($start)
             ->limit($limit)
@@ -78,7 +78,7 @@ class MessageController extends Controller
 
             DB::commit();
 
-            MessageSent::dispatch($message->load(['chat.users', 'files', 'answerToMessage', 'answerToMessage.files']));
+            MessageSent::dispatch($message->load(['chat.users', 'files', 'answerToMessage', 'answerToMessage.files', 'answerToMessage.user']));
 
             return new JsonResponse([
                 'message' => MessageResource::make($message->load('files'))
